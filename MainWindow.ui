@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>601</height>
+    <height>814</height>
    </rect>
   </property>
   <property name="maximumSize">
@@ -59,7 +59,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>METODA TRANSPOZYCJI</string>
+     <string>TRANSPOZYCJA</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_3">
@@ -118,7 +118,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>330</y>
+      <y>630</y>
       <width>380</width>
       <height>40</height>
      </rect>
@@ -134,7 +134,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>METODA MONOALFABETYCZNA</string>
+     <string>MONOALFABET</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_5">
@@ -147,7 +147,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Podaj słowo klucz:</string>
+     <string>Podaj klucz:</string>
     </property>
    </widget>
    <widget class="QTextEdit" name="klucz__monoalfabet">
@@ -197,6 +197,182 @@
     </property>
     <property name="text">
      <string>Wczytaj z pliku</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_6">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>320</y>
+      <width>380</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>DES</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="szyfruj_des_blokowo">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>390</y>
+      <width>100</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Szyfruj blokowo</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="odszyfruj__des_blokowo">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>430</y>
+      <width>100</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Odszyfruj blokowo</string>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="klucz__des">
+    <property name="geometry">
+     <rect>
+      <x>120</x>
+      <y>350</y>
+      <width>100</width>
+      <height>30</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_7">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>350</y>
+      <width>100</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Podaj klucz:</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="odszyfruj__des_strumieniowo">
+    <property name="geometry">
+     <rect>
+      <x>120</x>
+      <y>430</y>
+      <width>121</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Odszyfruj strumieniowo</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="szyfruj_des_strumieniowo">
+    <property name="geometry">
+     <rect>
+      <x>120</x>
+      <y>390</y>
+      <width>121</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Szyfruj strumieniowo</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_8">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>470</y>
+      <width>380</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>AES</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="szyfruj_aes_blokowo">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>540</y>
+      <width>100</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Szyfruj blokowo</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="odszyfruj__aes_blokowo">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>580</y>
+      <width>100</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Odszyfruj blokowo</string>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="klucz__aes">
+    <property name="geometry">
+     <rect>
+      <x>120</x>
+      <y>500</y>
+      <width>100</width>
+      <height>30</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_9">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>500</y>
+      <width>100</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Podaj klucz:</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="odszyfruj__aes_strumieniowo">
+    <property name="geometry">
+     <rect>
+      <x>120</x>
+      <y>580</y>
+      <width>121</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Odszyfruj strumieniowo</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="szyfruj_aes_strumieniowo">
+    <property name="geometry">
+     <rect>
+      <x>120</x>
+      <y>540</y>
+      <width>121</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Szyfruj strumieniowo</string>
     </property>
    </widget>
   </widget>
