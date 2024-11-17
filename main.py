@@ -5,6 +5,7 @@ import transpozycja
 import monoalfabet
 from des import DESCipher
 from aes import AESCipher
+from rsa import RSACipher
 
 class Projekt(QMainWindow):
     def __init__(self):
@@ -32,6 +33,9 @@ class Projekt(QMainWindow):
 
         self.ui.szyfruj_aes_strumieniowo.clicked.connect(self.szyfruj_aes_strumieniowo)
         self.ui.odszyfruj__aes_strumieniowo.clicked.connect(self.odszyfruj_aes_strumieniowo)
+
+        self.ui.szyfruj_rsa.clicked.connect(self.szyfruj_rsa)
+        self.ui.odszyfruj_rsa.clicked.connect(self.odszyfruj_rsa)
 
     def wczytaj_plik(self):
         file_name, _ = QFileDialog.getOpenFileName(self, "Wybierz plik", "", "Text Files (*.txt);;All Files (*)")
@@ -158,6 +162,31 @@ class Projekt(QMainWindow):
         aes_cipher = AESCipher(klucz)
         try:
             odszyfrowany = aes_cipher.decrypt_stream_mode(szyfrowany)
+            self.ui.output.setPlainText(odszyfrowany)
+        except Exception as e:
+            self.ui.output.setPlainText(f"Błąd odszyfrowania: {str(e)}")
+
+### RSA ###
+    def szyfruj_rsa(self):
+        rsa_cipher = RSACipher()
+        tekst = self.ui.input.toPlainText()
+        try:
+            szyfrowany = rsa_cipher.encrypt(tekst)
+            szyfrowany_str = " ".join(map(str, szyfrowany))  # Zamiana listy liczb na ciąg
+            self.ui.output.setPlainText(
+                f"{szyfrowany_str}\nKlucz publiczny: {rsa_cipher.public_key}"
+            )
+            self.rsa_private_key = rsa_cipher.private_key  # Przechowujemy klucz prywatny
+        except Exception as e:
+            self.ui.output.setPlainText(f"Błąd szyfrowania: {str(e)}")
+
+    def odszyfruj_rsa(self):
+        try:
+            szyfrowany = self.ui.input.toPlainText()
+            ciphertext = list(map(int, szyfrowany.split()))  # Konwersja ciągu na listę liczb
+            rsa_cipher = RSACipher()
+            rsa_cipher.private_key = self.rsa_private_key  # Użycie klucza prywatnego
+            odszyfrowany = rsa_cipher.decrypt(ciphertext)
             self.ui.output.setPlainText(odszyfrowany)
         except Exception as e:
             self.ui.output.setPlainText(f"Błąd odszyfrowania: {str(e)}")
