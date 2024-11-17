@@ -123,6 +123,15 @@ class Ui_MainWindow(object):
         self.szyfruj_rsa = QtWidgets.QPushButton(self.centralwidget)
         self.szyfruj_rsa.setGeometry(QtCore.QRect(260, 120, 100, 30))
         self.szyfruj_rsa.setObjectName("szyfruj_rsa")
+        self.label_11 = QtWidgets.QLabel(self.centralwidget)
+        self.label_11.setGeometry(QtCore.QRect(260, 160, 231, 30))
+        self.label_11.setObjectName("label_11")
+        self.odszyfruj_hellman = QtWidgets.QPushButton(self.centralwidget)
+        self.odszyfruj_hellman.setGeometry(QtCore.QRect(370, 190, 100, 30))
+        self.odszyfruj_hellman.setObjectName("odszyfruj_hellman")
+        self.szyfruj_hellman = QtWidgets.QPushButton(self.centralwidget)
+        self.szyfruj_hellman.setGeometry(QtCore.QRect(260, 190, 100, 30))
+        self.szyfruj_hellman.setObjectName("szyfruj_hellman")
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
@@ -156,6 +165,9 @@ class Ui_MainWindow(object):
         self.label_10.setText(_translate("MainWindow", "RSA"))
         self.odszyfruj_rsa.setText(_translate("MainWindow", "Odszyfruj"))
         self.szyfruj_rsa.setText(_translate("MainWindow", "Szyfruj"))
+        self.label_11.setText(_translate("MainWindow", "DIFFIE-HELLMAN"))
+        self.odszyfruj_hellman.setText(_translate("MainWindow", "Odszyfruj"))
+        self.szyfruj_hellman.setText(_translate("MainWindow", "Szyfruj"))
 
 
 if __name__ == "__main__":

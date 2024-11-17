@@ -440,6 +440,45 @@
      <string>Szyfruj</string>
     </property>
    </widget>
+   <widget class="QLabel" name="label_11">
+    <property name="geometry">
+     <rect>
+      <x>260</x>
+      <y>160</y>
+      <width>231</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>DIFFIE-HELLMAN</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="odszyfruj_hellman">
+    <property name="geometry">
+     <rect>
+      <x>370</x>
+      <y>190</y>
+      <width>100</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Odszyfruj</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="szyfruj_hellman">
+    <property name="geometry">
+     <rect>
+      <x>260</x>
+      <y>190</y>
+      <width>100</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Szyfruj</string>
+    </property>
+   </widget>
   </widget>
  </widget>
  <resources/>

@@ -6,12 +6,16 @@ import monoalfabet
 from des import DESCipher
 from aes import AESCipher
 from rsa import RSACipher
+from diffie_hellman import DiffieHellman
 
 class Projekt(QMainWindow):
     def __init__(self):
         super().__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+
+        self.diffie_hellman_alice = DiffieHellman()
+        self.diffie_hellman_bob = DiffieHellman()
 
 ###PRZYCISKI###
         self.ui.file.clicked.connect(self.wczytaj_plik)
@@ -36,6 +40,9 @@ class Projekt(QMainWindow):
 
         self.ui.szyfruj_rsa.clicked.connect(self.szyfruj_rsa)
         self.ui.odszyfruj_rsa.clicked.connect(self.odszyfruj_rsa)
+
+        self.ui.szyfruj_hellman.clicked.connect(self.szyfruj_hellman)
+        self.ui.odszyfruj_hellman.clicked.connect(self.odszyfruj_hellman)
 
     def wczytaj_plik(self):
         file_name, _ = QFileDialog.getOpenFileName(self, "Wybierz plik", "", "Text Files (*.txt);;All Files (*)")
@@ -190,6 +197,42 @@ class Projekt(QMainWindow):
             self.ui.output.setPlainText(odszyfrowany)
         except Exception as e:
             self.ui.output.setPlainText(f"Błąd odszyfrowania: {str(e)}")
+
+### DIFFIE-HELLMAN ###
+    def szyfruj_hellman(self):
+        tekst = self.ui.input.toPlainText()
+
+        # Wymiana kluczy
+        alice_public_key = self.diffie_hellman_alice.public_key
+        bob_public_key = self.diffie_hellman_bob.public_key
+
+        # Obliczanie wspólnego sekretu
+        alice_shared_secret = self.diffie_hellman_alice.compute_shared_secret(bob_public_key)
+        alice_key = DiffieHellman.derive_key(alice_shared_secret)
+
+        # Szyfrowanie wiadomości
+        try:
+            szyfrowany = DiffieHellman.encrypt_message(tekst, alice_key)
+            self.ui.output.setPlainText(
+                f"{szyfrowany}\nAlice Public Key: {alice_public_key}\nBob Public Key: {bob_public_key}"
+            )
+        except Exception as e:
+            self.ui.output.setPlainText(f"Błąd szyfrowania Diffie-Hellman: {str(e)}")
+
+    def odszyfruj_hellman(self):
+        szyfrowany = self.ui.input.toPlainText()
+
+        # Wymiana kluczy
+        alice_public_key = self.diffie_hellman_alice.public_key
+        bob_shared_secret = self.diffie_hellman_bob.compute_shared_secret(alice_public_key)
+        bob_key = DiffieHellman.derive_key(bob_shared_secret)
+
+        # Odszyfrowanie wiadomości
+        try:
+            odszyfrowany = DiffieHellman.decrypt_message(szyfrowany, bob_key)
+            self.ui.output.setPlainText(odszyfrowany)
+        except Exception as e:
+            self.ui.output.setPlainText(f"Błąd odszyfrowania Diffie-Hellman: {str(e)}")
 
 
 if __name__ == "__main__":
