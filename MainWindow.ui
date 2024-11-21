@@ -17,7 +17,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Kryptografia i teoria kodów - projekt</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QLabel" name="label">
@@ -59,7 +59,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>TRANSPOZYCJA</string>
+     <string>1. TRANSPOZYCJA</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_3">
@@ -80,7 +80,7 @@
      <rect>
       <x>120</x>
       <y>120</y>
-      <width>100</width>
+      <width>121</width>
       <height>30</height>
      </rect>
     </property>
@@ -93,7 +93,7 @@
      <rect>
       <x>10</x>
       <y>170</y>
-      <width>100</width>
+      <width>111</width>
       <height>30</height>
      </rect>
     </property>
@@ -104,9 +104,9 @@
    <widget class="QPushButton" name="odszyfruj_transpozycja">
     <property name="geometry">
      <rect>
-      <x>120</x>
+      <x>130</x>
       <y>170</y>
-      <width>100</width>
+      <width>111</width>
       <height>30</height>
      </rect>
     </property>
@@ -134,7 +134,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>MONOALFABET</string>
+     <string>2. MONOALFABET</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_5">
@@ -155,7 +155,7 @@
      <rect>
       <x>120</x>
       <y>240</y>
-      <width>100</width>
+      <width>121</width>
       <height>30</height>
      </rect>
     </property>
@@ -163,9 +163,9 @@
    <widget class="QPushButton" name="odszyfruj__monoalfabet">
     <property name="geometry">
      <rect>
-      <x>120</x>
+      <x>130</x>
       <y>280</y>
-      <width>100</width>
+      <width>111</width>
       <height>30</height>
      </rect>
     </property>
@@ -178,7 +178,7 @@
      <rect>
       <x>10</x>
       <y>280</y>
-      <width>100</width>
+      <width>111</width>
       <height>30</height>
      </rect>
     </property>
@@ -209,7 +209,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>DES</string>
+     <string>3. DES</string>
     </property>
    </widget>
    <widget class="QPushButton" name="szyfruj_des_blokowo">
@@ -297,7 +297,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>AES</string>
+     <string>4. AES</string>
     </property>
    </widget>
    <widget class="QPushButton" name="szyfruj_aes_blokowo">
@@ -385,7 +385,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>RSA</string>
+     <string>5. RSA</string>
     </property>
    </widget>
    <widget class="Line" name="line_2">
@@ -404,9 +404,9 @@
    <widget class="QPushButton" name="odszyfruj_rsa">
     <property name="geometry">
      <rect>
-      <x>370</x>
-      <y>120</y>
-      <width>100</width>
+      <x>380</x>
+      <y>200</y>
+      <width>111</width>
       <height>30</height>
      </rect>
     </property>
@@ -418,8 +418,8 @@
     <property name="geometry">
      <rect>
       <x>260</x>
-      <y>120</y>
-      <width>100</width>
+      <y>200</y>
+      <width>111</width>
       <height>30</height>
      </rect>
     </property>
@@ -431,21 +431,21 @@
     <property name="geometry">
      <rect>
       <x>260</x>
-      <y>160</y>
+      <y>240</y>
       <width>231</width>
       <height>30</height>
      </rect>
     </property>
     <property name="text">
-     <string>DIFFIE-HELLMAN</string>
+     <string>6. DIFFIE-HELLMAN</string>
     </property>
    </widget>
    <widget class="QPushButton" name="odszyfruj_hellman">
     <property name="geometry">
      <rect>
-      <x>370</x>
-      <y>190</y>
-      <width>100</width>
+      <x>380</x>
+      <y>490</y>
+      <width>111</width>
       <height>30</height>
      </rect>
     </property>
@@ -457,8 +457,8 @@
     <property name="geometry">
      <rect>
       <x>260</x>
-      <y>190</y>
-      <width>100</width>
+      <y>490</y>
+      <width>111</width>
       <height>30</height>
      </rect>
     </property>
@@ -476,7 +476,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Klucz DES musi mieć dokładnie 8 bajtów.</string>
+     <string>klucz DES musi mieć dokładnie 8 bajtów</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_13">
@@ -489,7 +489,222 @@
      </rect>
     </property>
     <property name="text">
-     <string>Klucz AES musi mieć 16, 24 lub 32 bajty.</string>
+     <string>klucz AES musi mieć 16, 24 lub 32 bajty</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_14">
+    <property name="geometry">
+     <rect>
+      <x>260</x>
+      <y>120</y>
+      <width>100</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Podaj p:</string>
+    </property>
+   </widget>
+   <widget class="QSpinBox" name="p_rsa">
+    <property name="geometry">
+     <rect>
+      <x>370</x>
+      <y>120</y>
+      <width>121</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="minimum">
+     <number>1</number>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_15">
+    <property name="geometry">
+     <rect>
+      <x>260</x>
+      <y>150</y>
+      <width>100</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Podaj q:</string>
+    </property>
+   </widget>
+   <widget class="QSpinBox" name="q_rsa">
+    <property name="geometry">
+     <rect>
+      <x>370</x>
+      <y>150</y>
+      <width>121</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="minimum">
+     <number>1</number>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_16">
+    <property name="geometry">
+     <rect>
+      <x>260</x>
+      <y>175</y>
+      <width>221</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>p i q muszą być liczbami pierwszymi</string>
+    </property>
+   </widget>
+   <widget class="Line" name="line">
+    <property name="geometry">
+     <rect>
+      <x>233</x>
+      <y>90</y>
+      <width>31</width>
+      <height>541</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Vertical</enum>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_17">
+    <property name="geometry">
+     <rect>
+      <x>260</x>
+      <y>270</y>
+      <width>100</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Podaj p:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_18">
+    <property name="geometry">
+     <rect>
+      <x>260</x>
+      <y>295</y>
+      <width>221</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>p musi być liczbą pierwszą</string>
+    </property>
+   </widget>
+   <widget class="QSpinBox" name="g_hellman">
+    <property name="geometry">
+     <rect>
+      <x>370</x>
+      <y>320</y>
+      <width>121</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="minimum">
+     <number>1</number>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_19">
+    <property name="geometry">
+     <rect>
+      <x>260</x>
+      <y>320</y>
+      <width>100</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Podaj g:</string>
+    </property>
+   </widget>
+   <widget class="QSpinBox" name="p_hellman">
+    <property name="geometry">
+     <rect>
+      <x>370</x>
+      <y>270</y>
+      <width>121</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="minimum">
+     <number>1</number>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_20">
+    <property name="geometry">
+     <rect>
+      <x>260</x>
+      <y>345</y>
+      <width>221</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>g musi być liczbą większą niż 1 i mniejszą niż p</string>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="klucz__monoalfabet_2">
+    <property name="geometry">
+     <rect>
+      <x>370</x>
+      <y>410</y>
+      <width>121</width>
+      <height>30</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="klucz__bob">
+    <property name="geometry">
+     <rect>
+      <x>370</x>
+      <y>450</y>
+      <width>121</width>
+      <height>30</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_21">
+    <property name="geometry">
+     <rect>
+      <x>260</x>
+      <y>410</y>
+      <width>100</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Klucz publiczny Alice:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_22">
+    <property name="geometry">
+     <rect>
+      <x>260</x>
+      <y>450</y>
+      <width>100</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Klucz publiczny Bob:</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="klucz_hellman">
+    <property name="geometry">
+     <rect>
+      <x>260</x>
+      <y>370</y>
+      <width>231</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Oblicz klucze</string>
     </property>
    </widget>
   </widget>

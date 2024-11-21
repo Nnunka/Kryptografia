@@ -1,30 +1,39 @@
-from Crypto.Util.number import getPrime, inverse, GCD
-
+from Crypto.Util.number import inverse, GCD
 
 class RSACipher:
-    def __init__(self, bit_length=2048):
-        self.bit_length = bit_length
-        self.public_key = None
-        self.private_key = None
-        self.n = None
-        self.generate_keys()
+    def __init__(self, p, q):
+        """
+        Inicjalizacja na podstawie podanych liczb pierwszych p i q.
+        """
+        if p == q:
+            raise ValueError("Liczby p i q muszą być różne.")
+        if not self.is_prime(p) or not self.is_prime(q):
+            raise ValueError("Obie liczby muszą być liczbami pierwszymi.")
 
-    def generate_keys(self):
-        p = getPrime(self.bit_length // 2)
-        q = getPrime(self.bit_length // 2)
         self.n = p * q
         phi_n = (p - 1) * (q - 1)
-        e = 65537
-        if GCD(e, phi_n) != 1:
+        self.e = 65537  # Typowy wykładnik publiczny
+        if GCD(self.e, phi_n) != 1:
             raise ValueError("e i phi(n) nie są względnie pierwsze.")
-        d = inverse(e, phi_n)
-        self.public_key = (self.n, e)
-        self.private_key = (self.n, d)
+        self.d = inverse(self.e, phi_n)
+        self.public_key = (self.n, self.e)
+        self.private_key = (self.n, self.d)
+
+    @staticmethod
+    def is_prime(num):
+        """Prosta funkcja sprawdzająca, czy liczba jest pierwsza."""
+        if num < 2:
+            return False
+        for i in range(2, int(num**0.5) + 1):
+            if num % i == 0:
+                return False
+        return True
 
     def encrypt(self, plaintext):
+        """Szyfruje tekst za pomocą klucza publicznego."""
         n, e = self.public_key
         plaintext_bytes = plaintext.encode('utf-8')
-        max_block_size = (self.n.bit_length() // 8) - 1
+        max_block_size = max((self.n.bit_length() // 8) - 1, 1)  # Zapewnia, że krok w range() nie będzie zerem
         ciphertext = []
         for i in range(0, len(plaintext_bytes), max_block_size):
             block = plaintext_bytes[i:i + max_block_size]
@@ -35,7 +44,9 @@ class RSACipher:
             ciphertext.append(encrypted_block)
         return ciphertext
 
+
     def decrypt(self, ciphertext):
+        """Odszyfrowuje tekst za pomocą klucza prywatnego."""
         n, d = self.private_key
         plaintext_bytes = bytearray()
         for block in ciphertext:
