@@ -163,7 +163,7 @@ class Ui_MainWindow(object):
         self.label_18.setObjectName("label_18")
         self.g_hellman = QtWidgets.QSpinBox(self.centralwidget)
         self.g_hellman.setGeometry(QtCore.QRect(370, 320, 121, 30))
-        self.g_hellman.setMinimum(1)
+        self.g_hellman.setMinimum(2)
         self.g_hellman.setObjectName("g_hellman")
         self.label_19 = QtWidgets.QLabel(self.centralwidget)
         self.label_19.setGeometry(QtCore.QRect(260, 320, 100, 30))
