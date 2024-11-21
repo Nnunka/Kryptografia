@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>501</width>
+    <width>502</width>
     <height>817</height>
    </rect>
   </property>
@@ -118,9 +118,9 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>640</y>
+      <y>650</y>
       <width>481</width>
-      <height>161</height>
+      <height>151</height>
      </rect>
     </property>
    </widget>
@@ -216,7 +216,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>390</y>
+      <y>400</y>
       <width>100</width>
       <height>30</height>
      </rect>
@@ -229,7 +229,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>430</y>
+      <y>440</y>
       <width>100</width>
       <height>30</height>
      </rect>
@@ -265,7 +265,7 @@
     <property name="geometry">
      <rect>
       <x>120</x>
-      <y>430</y>
+      <y>440</y>
       <width>121</width>
       <height>30</height>
      </rect>
@@ -278,7 +278,7 @@
     <property name="geometry">
      <rect>
       <x>120</x>
-      <y>390</y>
+      <y>400</y>
       <width>121</width>
       <height>30</height>
      </rect>
@@ -291,7 +291,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>470</y>
+      <y>480</y>
       <width>231</width>
       <height>30</height>
      </rect>
@@ -304,7 +304,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>540</y>
+      <y>560</y>
       <width>100</width>
       <height>30</height>
      </rect>
@@ -317,7 +317,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>580</y>
+      <y>600</y>
       <width>100</width>
       <height>30</height>
      </rect>
@@ -330,7 +330,7 @@
     <property name="geometry">
      <rect>
       <x>120</x>
-      <y>500</y>
+      <y>510</y>
       <width>121</width>
       <height>30</height>
      </rect>
@@ -340,7 +340,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>500</y>
+      <y>510</y>
       <width>100</width>
       <height>30</height>
      </rect>
@@ -353,7 +353,7 @@
     <property name="geometry">
      <rect>
       <x>120</x>
-      <y>580</y>
+      <y>600</y>
       <width>121</width>
       <height>30</height>
      </rect>
@@ -366,7 +366,7 @@
     <property name="geometry">
      <rect>
       <x>120</x>
-      <y>540</y>
+      <y>560</y>
       <width>121</width>
       <height>30</height>
      </rect>
@@ -388,24 +388,11 @@
      <string>RSA</string>
     </property>
    </widget>
-   <widget class="Line" name="line">
-    <property name="geometry">
-     <rect>
-      <x>240</x>
-      <y>90</y>
-      <width>20</width>
-      <height>531</height>
-     </rect>
-    </property>
-    <property name="orientation">
-     <enum>Qt::Vertical</enum>
-    </property>
-   </widget>
    <widget class="Line" name="line_2">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>620</y>
+      <y>630</y>
       <width>481</width>
       <height>20</height>
      </rect>
@@ -477,6 +464,32 @@
     </property>
     <property name="text">
      <string>Szyfruj</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_12">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>375</y>
+      <width>221</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Klucz DES musi mieć dokładnie 8 bajtów.</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_13">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>535</y>
+      <width>221</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Klucz AES musi mieć 16, 24 lub 32 bajty.</string>
     </property>
    </widget>
   </widget>
