@@ -10,8 +10,6 @@ class DiffieHellman:
     """
     Klasa implementująca protokół wymiany klucza Diffiego-Hellmana, 
     z dodatkową obsługą szyfrowania i deszyfrowania wiadomości za pomocą AES.
-
-    Protokół pozwala na bezpieczne ustalenie wspólnego klucza pomiędzy dwiema stronami.
     """
 
     def __init__(self, p, g):
@@ -52,6 +50,11 @@ class DiffieHellman:
         """
         if not (1 <= other_public_key < self.p):
             raise ValueError("Klucz publiczny drugiej strony jest niepoprawny.")
+
+        # Sprawdzenie, czy klucz publiczny pochodzi z właściwego generatora
+        if pow(self.g, other_public_key, self.p) != other_public_key and other_public_key != self.public_key:
+            raise ValueError("Klucz publiczny jest fałszywy lub nieprawidłowy.")
+
         return pow(other_public_key, self.private_key, self.p)
 
     @staticmethod
@@ -87,14 +90,9 @@ class DiffieHellman:
         if len(key) != 32:  # Klucz AES musi być 256-bitowy
             raise ValueError("Klucz AES musi mieć długość 32 bajty.")
         
-        # Tworzenie obiektu szyfrującego w trybie CBC
         cipher = AES.new(key, AES.MODE_CBC)
-        iv = cipher.iv  # Wektor inicjalizujący (IV)
-
-        # Szyfrowanie wiadomości z dodaniem wypełnienia
+        iv = cipher.iv
         ciphertext = cipher.encrypt(pad(message.encode(), AES.block_size))
-
-        # Zakodowanie IV i zaszyfrowanych danych w Base64
         return base64.b64encode(iv + ciphertext).decode('utf-8')
 
     @staticmethod
@@ -115,16 +113,10 @@ class DiffieHellman:
         if len(key) != 32:  # Klucz AES musi być 256-bitowy
             raise ValueError("Klucz AES musi mieć długość 32 bajty.")
         
-        # Dekodowanie danych Base64
         data = base64.b64decode(encrypted_message)
-
-        # Wyodrębnienie wektora inicjalizującego (IV) i zaszyfrowanych danych
         iv = data[:AES.block_size]
         ciphertext = data[AES.block_size:]
-
-        # Tworzenie obiektu deszyfrującego w trybie CBC
         cipher = AES.new(key, AES.MODE_CBC, iv)
-
-        # Deszyfrowanie wiadomości i usunięcie wypełnienia
         plaintext = unpad(cipher.decrypt(ciphertext), AES.block_size)
         return plaintext.decode('utf-8')
+
