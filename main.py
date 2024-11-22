@@ -69,6 +69,12 @@ class Projekt(QMainWindow):
             with open(file_name, 'r', encoding='utf-8') as file:
                 tekst = file.read()
                 self.ui.input.setPlainText(tekst)
+    
+    def sprawdz_puste_pole(self, tekst):
+        if not tekst.strip():
+            self.ui.output.setPlainText("Pole tekstowe jest puste. Wprowadź tekst do szyfrowania.")
+            return False
+        return True
 
     ### Transpozycja ###
     def szyfruj_transpozycja(self):
@@ -76,6 +82,8 @@ class Projekt(QMainWindow):
         Szyfruje tekst za pomocą szyfru transpozycyjnego na podstawie klucza.
         """
         tekst = self.ui.input.toPlainText()
+        if not self.sprawdz_puste_pole(tekst):
+            return
         klucz = self.ui.klucz_transpozycja.value()
         szyfrowany = transpozycja.szyfruj(tekst, klucz)
         self.ui.output.setPlainText(szyfrowany)
@@ -85,6 +93,8 @@ class Projekt(QMainWindow):
         Odszyfrowuje tekst zaszyfrowany szyfrem transpozycyjnym na podstawie klucza.
         """
         tekst = self.ui.input.toPlainText()
+        if not self.sprawdz_puste_pole(tekst):
+            return
         klucz = self.ui.klucz_transpozycja.value()
         odszyfrowany = transpozycja.odszyfruj(tekst, klucz)
         self.ui.output.setPlainText(odszyfrowany)
@@ -95,6 +105,8 @@ class Projekt(QMainWindow):
         Szyfruje tekst za pomocą szyfru monoalfabetycznego z użyciem klucza.
         """
         tekst = self.ui.input.toPlainText().lower()
+        if not self.sprawdz_puste_pole(tekst):
+            return
         klucz = self.ui.klucz__monoalfabet.toPlainText().lower()
         szyfrowany = monoalfabet.szyfruj(tekst, klucz)
         self.ui.output.setPlainText(szyfrowany)
@@ -104,6 +116,8 @@ class Projekt(QMainWindow):
         Odszyfrowuje tekst zaszyfrowany szyfrem monoalfabetycznym z użyciem klucza.
         """
         tekst = self.ui.input.toPlainText().lower()
+        if not self.sprawdz_puste_pole(tekst):
+            return
         klucz = self.ui.klucz__monoalfabet.toPlainText().lower()
         odszyfrowany = monoalfabet.odszyfruj(tekst, klucz)
         self.ui.output.setPlainText(odszyfrowany)
@@ -114,6 +128,8 @@ class Projekt(QMainWindow):
         Szyfruje tekst za pomocą algorytmu DES w trybie blokowym.
         """
         tekst = self.ui.input.toPlainText()
+        if not self.sprawdz_puste_pole(tekst):
+            return
         klucz = self.ui.klucz__des.toPlainText().encode('utf-8')
         if len(klucz) != 8:
             self.ui.output.setPlainText("Klucz DES musi mieć dokładnie 8 bajtów.")
@@ -127,6 +143,8 @@ class Projekt(QMainWindow):
         Odszyfrowuje tekst zaszyfrowany za pomocą algorytmu DES w trybie blokowym.
         """
         szyfrowany = self.ui.input.toPlainText()
+        if not self.sprawdz_puste_pole(szyfrowany):
+            return
         klucz = self.ui.klucz__des.toPlainText().encode('utf-8')
         if len(klucz) != 8:
             self.ui.output.setPlainText("Klucz DES musi mieć dokładnie 8 bajtów.")
@@ -144,6 +162,8 @@ class Projekt(QMainWindow):
         Szyfruje tekst za pomocą algorytmu DES w trybie strumieniowym.
         """
         tekst = self.ui.input.toPlainText()
+        if not self.sprawdz_puste_pole(tekst):
+            return
         klucz = self.ui.klucz__des.toPlainText().encode('utf-8')
         if len(klucz) != 8:
             self.ui.output.setPlainText("Klucz DES musi mieć dokładnie 8 bajtów.")
@@ -157,6 +177,8 @@ class Projekt(QMainWindow):
         Odszyfrowuje tekst zaszyfrowany za pomocą algorytmu DES w trybie strumieniowym.
         """
         szyfrowany = self.ui.input.toPlainText()
+        if not self.sprawdz_puste_pole(szyfrowany):
+            return
         klucz = self.ui.klucz__des.toPlainText().encode('utf-8')
         if len(klucz) != 8:
             self.ui.output.setPlainText("Klucz DES musi mieć dokładnie 8 bajtów.")
@@ -174,6 +196,8 @@ class Projekt(QMainWindow):
         Szyfruje tekst za pomocą algorytmu AES w trybie blokowym.
         """
         tekst = self.ui.input.toPlainText()
+        if not self.sprawdz_puste_pole(tekst):
+            return
         klucz = self.ui.klucz__aes.toPlainText().encode('utf-8')
         if len(klucz) not in [16, 24, 32]:
             self.ui.output.setPlainText("Klucz AES musi mieć 16, 24 lub 32 bajty.")
@@ -187,6 +211,8 @@ class Projekt(QMainWindow):
         Odszyfrowuje tekst zaszyfrowany za pomocą algorytmu AES w trybie blokowym.
         """
         szyfrowany = self.ui.input.toPlainText()
+        if not self.sprawdz_puste_pole(szyfrowany):
+            return
         klucz = self.ui.klucz__aes.toPlainText().encode('utf-8')
         if len(klucz) not in [16, 24, 32]:
             self.ui.output.setPlainText("Klucz AES musi mieć 16, 24 lub 32 bajty.")
@@ -204,6 +230,8 @@ class Projekt(QMainWindow):
         Szyfruje tekst za pomocą algorytmu AES w trybie strumieniowym.
         """
         tekst = self.ui.input.toPlainText()
+        if not self.sprawdz_puste_pole(tekst):
+            return
         klucz = self.ui.klucz__aes.toPlainText().encode('utf-8')
         if len(klucz) not in [16, 24, 32]:
             self.ui.output.setPlainText("Klucz AES musi mieć 16, 24 lub 32 bajty.")
@@ -217,6 +245,8 @@ class Projekt(QMainWindow):
         Odszyfrowuje tekst zaszyfrowany za pomocą algorytmu AES w trybie strumieniowym.
         """
         szyfrowany = self.ui.input.toPlainText()
+        if not self.sprawdz_puste_pole(szyfrowany):
+            return
         klucz = self.ui.klucz__aes.toPlainText().encode('utf-8')
         if len(klucz) not in [16, 24, 32]:
             self.ui.output.setPlainText("Klucz AES musi mieć 16, 24 lub 32 bajty.")
@@ -238,6 +268,8 @@ class Projekt(QMainWindow):
             q = self.ui.q_rsa.value()
             rsa_cipher = RSACipher(p, q)
             tekst = self.ui.input.toPlainText()
+            if not self.sprawdz_puste_pole(tekst):
+                return
             szyfrowany = rsa_cipher.encrypt(tekst)
             szyfrowany_str = " ".join(map(str, szyfrowany))
             self.ui.output.setPlainText(f"{szyfrowany_str}\nKlucz publiczny: {rsa_cipher.public_key}")
@@ -251,6 +283,8 @@ class Projekt(QMainWindow):
         """
         try:
             szyfrogram = self.ui.input.toPlainText()
+            if not self.sprawdz_puste_pole(szyfrogram):
+                return
             ciphertext = list(map(int, szyfrogram.split()))
             odszyfrowany = self.rsa_cipher.decrypt(ciphertext)
             self.ui.output.setPlainText(f"{odszyfrowany}")
@@ -288,6 +322,8 @@ class Projekt(QMainWindow):
                 self.ui.output.setPlainText("Najpierw oblicz klucze publiczne.")
                 return
             tekst = self.ui.input.toPlainText()
+            if not self.sprawdz_puste_pole(tekst):
+                return
             alice_shared_secret = self.diffie_hellman_alice.compute_shared_secret(self.diffie_hellman_bob.public_key)
             alice_key = DiffieHellman.derive_key(alice_shared_secret)
             szyfrowany = DiffieHellman.encrypt_message(tekst, alice_key)
@@ -304,6 +340,8 @@ class Projekt(QMainWindow):
                 self.ui.output.setPlainText("Najpierw oblicz klucze publiczne.")
                 return
             szyfrowany = self.ui.input.toPlainText()
+            if not self.sprawdz_puste_pole(szyfrowany):
+                return
             bob_shared_secret = self.diffie_hellman_bob.compute_shared_secret(self.diffie_hellman_alice.public_key)
             bob_key = DiffieHellman.derive_key(bob_shared_secret)
             odszyfrowany = DiffieHellman.decrypt_message(szyfrowany, bob_key)
