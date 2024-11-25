@@ -258,38 +258,36 @@ class Projekt(QMainWindow):
         except Exception as e:
             self.ui.output.setPlainText(f"Błąd odszyfrowania: {str(e)}")
 
-    ### RSA ###
+### RSA ###
     def szyfruj_rsa(self):
         """
         Szyfruje tekst za pomocą algorytmu RSA.
         """
+        rsa_cipher = RSACipher()
+        tekst = self.ui.input.toPlainText()
         try:
-            p = self.ui.p_rsa.value()
-            q = self.ui.q_rsa.value()
-            rsa_cipher = RSACipher(p, q)
-            tekst = self.ui.input.toPlainText()
-            if not self.sprawdz_puste_pole(tekst):
-                return
             szyfrowany = rsa_cipher.encrypt(tekst)
-            szyfrowany_str = " ".join(map(str, szyfrowany))
-            self.ui.output.setPlainText(f"{szyfrowany_str}\nKlucz publiczny: {rsa_cipher.public_key}")
-            self.rsa_cipher = rsa_cipher
+            szyfrowany_str = " ".join(map(str, szyfrowany))  
+            self.ui.output.setPlainText(
+                f"{szyfrowany_str}\nKlucz publiczny: {rsa_cipher.public_key}"
+            )
+            self.rsa_private_key = rsa_cipher.private_key 
         except Exception as e:
-            self.ui.output.setPlainText(f"Błąd szyfrowania RSA: {str(e)}")
+            self.ui.output.setPlainText(f"Błąd szyfrowania: {str(e)}")
 
     def odszyfruj_rsa(self):
         """
-        Odszyfrowuje tekst zaszyfrowany za pomocą algorytmu RSA.
+        Odszyfruje tekst za pomocą algorytmu RSA.
         """
         try:
-            szyfrogram = self.ui.input.toPlainText()
-            if not self.sprawdz_puste_pole(szyfrogram):
-                return
-            ciphertext = list(map(int, szyfrogram.split()))
-            odszyfrowany = self.rsa_cipher.decrypt(ciphertext)
-            self.ui.output.setPlainText(f"{odszyfrowany}")
+            szyfrowany = self.ui.input.toPlainText()
+            ciphertext = list(map(int, szyfrowany.split()))  
+            rsa_cipher = RSACipher()
+            rsa_cipher.private_key = self.rsa_private_key 
+            odszyfrowany = rsa_cipher.decrypt(ciphertext)
+            self.ui.output.setPlainText(odszyfrowany)
         except Exception as e:
-            self.ui.output.setPlainText(f"Błąd odszyfrowania RSA: {str(e)}")
+            self.ui.output.setPlainText(f"Błąd odszyfrowania: {str(e)}")
 
     ### Diffie-Hellman ###
     def oblicz_klucze_diffie_hellman(self):
