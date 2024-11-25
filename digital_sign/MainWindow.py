@@ -55,7 +55,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Kryptografia i teoria kodów - projekt  (Podpis cyfrowy)"))
         self.select_file.setText(_translate("MainWindow", "Wybierz plik PDF"))
         self.label.setText(_translate("MainWindow", "Nie wybrano pliku"))
         self.generate_keys.setText(_translate("MainWindow", "Wygeneruj klucze"))
