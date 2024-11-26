@@ -10,16 +10,26 @@ from PyPDF2 import PdfReader
 from MainWindow import Ui_MainWindow
 
 def ensure_data_folder():
+    """
+    Tworzy folder 'data', jeśli jeszcze nie istnieje.
+    """
     if not os.path.exists("data"):
         os.makedirs("data")
 
 class DigitalSignatureApp(QMainWindow):
+    """
+    Aplikacja PyQt5 do obsługi podpisów cyfrowych PDF oraz weryfikacji certyfikatów.
+    """
+
     def __init__(self):
+        """
+        Inicjalizuje główne okno aplikacji i podłącza przyciski GUI do odpowiednich funkcji.
+        """
         super().__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
-        # Connect buttons to methods
+        # Podłączenie przycisków do metod
         self.ui.select_file.clicked.connect(self.select_file)
         self.ui.generate_keys.clicked.connect(self.generate_keys)
         self.ui.sing_file.clicked.connect(self.sign_file)
@@ -27,14 +37,17 @@ class DigitalSignatureApp(QMainWindow):
         self.ui.load_certificate.clicked.connect(self.load_certificate)
         self.ui.load_chain.clicked.connect(self.load_certificate_chain)
 
-        # RSA Keys
+        # Klucze RSA
         self.private_key = None
         self.public_key = None
 
-        # Selected file
+        # Wybrany plik PDF
         self.selected_file = None
 
     def select_file(self):
+        """
+        Umożliwia użytkownikowi wybór pliku PDF do podpisania lub weryfikacji.
+        """
         file_dialog = QFileDialog()
         file_path, _ = file_dialog.getOpenFileName(self, "Wybierz plik PDF", "", "PDF Files (*.pdf)")
         if file_path:
@@ -44,15 +57,19 @@ class DigitalSignatureApp(QMainWindow):
             self.ui.label.setText("Nie wybrano pliku")
 
     def generate_keys(self):
-        ensure_data_folder()  # Ensure the "data" folder exists
-        
+        """
+        Generuje parę kluczy RSA (prywatny i publiczny) oraz zapisuje je w folderze 'data'.
+        """
+        ensure_data_folder()  # Upewnia się, że folder 'data' istnieje
+
+        # Generowanie klucza prywatnego
         self.private_key = rsa.generate_private_key(
             public_exponent=65537,
             key_size=2048,
         )
         self.public_key = self.private_key.public_key()
 
-        # Save keys to files
+        # Zapisywanie kluczy do plików
         private_key_path = os.path.join("data", "private_key.pem")
         public_key_path = os.path.join("data", "public_key.pem")
 
@@ -73,8 +90,11 @@ class DigitalSignatureApp(QMainWindow):
             )
         self.ui.label_2.setText(f"Klucze zapisane w folderze 'data' jako {os.path.basename(private_key_path)} i {os.path.basename(public_key_path)}.")
 
-
     def sign_file(self):
+        """
+        Podpisuje wybrany plik PDF przy użyciu klucza prywatnego RSA.
+        Zapisuje podpis w folderze 'data'.
+        """
         if not self.selected_file:
             self.ui.label_2.setText("Nie wybrano pliku PDF.")
             return
@@ -83,12 +103,12 @@ class DigitalSignatureApp(QMainWindow):
             self.ui.label_2.setText("Najpierw wygeneruj klucze RSA.")
             return
 
-        ensure_data_folder()  # Ensure the "data" folder exists
+        ensure_data_folder()  # Upewnia się, że folder 'data' istnieje
 
-        # Calculate hash
+        # Obliczanie hasha dokumentu
         document_hash = self.calculate_pdf_hash(self.selected_file)
 
-        # Sign the hash
+        # Podpisywanie hasha kluczem prywatnym
         signature = self.private_key.sign(
             document_hash,
             padding.PSS(
@@ -98,7 +118,7 @@ class DigitalSignatureApp(QMainWindow):
             hashes.SHA256()
         )
 
-        # Save the signature
+        # Zapis podpisu do pliku
         signature_path = os.path.join("data", "signature.sig")
         with open(signature_path, "wb") as sig_file:
             sig_file.write(signature)
@@ -106,6 +126,9 @@ class DigitalSignatureApp(QMainWindow):
         self.ui.label_2.setText(f"Plik podpisany i zapisany w folderze 'data' jako {os.path.basename(signature_path)}.")
 
     def verify_signature(self):
+        """
+        Weryfikuje podpis pliku PDF przy użyciu klucza publicznego RSA.
+        """
         if not self.selected_file:
             self.ui.label_2.setText("Nie wybrano pliku PDF.")
             return
@@ -119,14 +142,14 @@ class DigitalSignatureApp(QMainWindow):
             self.ui.label_2.setText("Brak klucza publicznego do weryfikacji.")
             return
 
-        # Calculate hash
+        # Obliczanie hasha dokumentu
         document_hash = self.calculate_pdf_hash(self.selected_file)
 
-        # Read the signature
+        # Odczytanie podpisu
         with open(signature_path, "rb") as sig_file:
             signature = sig_file.read()
 
-        # Verify the signature
+        # Weryfikacja podpisu
         try:
             self.public_key.verify(
                 signature,
@@ -141,8 +164,16 @@ class DigitalSignatureApp(QMainWindow):
         except Exception as e:
             self.ui.label_2.setText("Weryfikacja podpisu nie powiodła się.")
 
-
     def calculate_pdf_hash(self, pdf_path):
+        """
+        Oblicza hash (SHA-256) zawartości pliku PDF.
+
+        Args:
+            pdf_path (str): Ścieżka do pliku PDF.
+
+        Returns:
+            bytes: Hash zawartości PDF.
+        """
         reader = PdfReader(pdf_path)
         pdf_content = b"".join(page.extract_text().encode() for page in reader.pages)
         digest = hashes.Hash(hashes.SHA256())
@@ -150,6 +181,9 @@ class DigitalSignatureApp(QMainWindow):
         return digest.finalize()
 
     def load_certificate(self):
+        """
+        Wczytuje certyfikat w formacie PEM lub DER i wyświetla jego szczegóły.
+        """
         file_dialog = QFileDialog()
         cert_path, _ = file_dialog.getOpenFileName(self, "Wybierz certyfikat", "", "Certyfikaty (*.pem *.crt *.der)")
         if not cert_path:
@@ -171,6 +205,12 @@ class DigitalSignatureApp(QMainWindow):
             self.ui.certificate_info.setText(f"Błąd podczas wczytywania certyfikatu: {str(e)}")
 
     def display_certificate_info(self, certificate):
+        """
+        Wyświetla szczegóły certyfikatu X.509 w interfejsie graficznym.
+
+        Args:
+            certificate (x509.Certificate): Obiekt certyfikatu.
+        """
         info = []
 
         info.append(f"Wersja: {certificate.version.name}")
@@ -224,6 +264,9 @@ class DigitalSignatureApp(QMainWindow):
 
 
 if __name__ == "__main__":
+    """
+    Uruchamia aplikację PyQt5 do podpisów cyfrowych i obsługi certyfikatów.
+    """
     app = QApplication(sys.argv)
     window = DigitalSignatureApp()
     window.show()
