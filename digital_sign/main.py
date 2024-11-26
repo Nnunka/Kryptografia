@@ -5,6 +5,7 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import rsa, padding
 from cryptography.hazmat.primitives import serialization
 from cryptography.x509 import load_pem_x509_certificate, load_der_x509_certificate
+from cryptography.hazmat.primitives.serialization import Encoding
 from PyPDF2 import PdfReader
 from MainWindow import Ui_MainWindow
 
@@ -24,6 +25,7 @@ class DigitalSignatureApp(QMainWindow):
         self.ui.sing_file.clicked.connect(self.sign_file)
         self.ui.verify_signature.clicked.connect(self.verify_signature)
         self.ui.load_certificate.clicked.connect(self.load_certificate)
+        self.ui.load_chain.clicked.connect(self.load_certificate_chain)
 
         # RSA Keys
         self.private_key = None
@@ -183,6 +185,42 @@ class DigitalSignatureApp(QMainWindow):
             info.append(f"  - {extension.oid._name}: {extension.value}")
 
         self.ui.certificate_info.setText("\n".join(info))
+
+    def load_certificate_chain(self):
+        """
+        Wczytuje i wyświetla informacje o łańcuchu certyfikatów.
+        """
+        cert_folder = "cert_chain"
+        if not os.path.exists(cert_folder):
+            self.ui.certificate_info.setText("Folder 'cert_chain' nie istnieje.")
+            return
+
+        cert_files = ["root_cert.pem", "intermediate_cert.pem", "end_entity_cert.pem"]
+        chain_info = []
+
+        for cert_file in cert_files:
+            cert_path = os.path.join(cert_folder, cert_file)
+            if not os.path.exists(cert_path):
+                chain_info.append(f"{cert_file}: Nie znaleziono pliku.")
+                continue
+
+            try:
+                with open(cert_path, "rb") as f:
+                    cert_data = f.read()
+                    certificate = load_pem_x509_certificate(cert_data)
+
+                    chain_info.append(f"Certyfikat: {cert_file}")
+                    chain_info.append(f"  Wersja: {certificate.version.name}")
+                    chain_info.append(f"  Wystawca: {certificate.issuer.rfc4514_string()}")
+                    chain_info.append(f"  Odbiorca: {certificate.subject.rfc4514_string()}")
+                    chain_info.append(f"  Algorytm podpisu: {certificate.signature_algorithm_oid._name}")
+                    chain_info.append(f"  Data ważności od: {certificate.not_valid_before_utc}")
+                    chain_info.append(f"  Data ważności do: {certificate.not_valid_after_utc}")
+                    chain_info.append("")
+            except Exception as e:
+                chain_info.append(f"{cert_file}: Błąd wczytywania - {str(e)}")
+
+        self.ui.certificate_info.setText("\n".join(chain_info))
 
 
 if __name__ == "__main__":
