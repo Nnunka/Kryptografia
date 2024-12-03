@@ -11,77 +11,8 @@ from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.hazmat.primitives.hashes import SHA256
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 from PyPDF2 import PdfReader
+from hmac_utils import generate_hmac_key, load_hmac_key, calculate_hmac, verify_hmac
 from MainWindow import Ui_MainWindow
-
-def generate_hmac_key():
-    """
-    Generuje klucz HMAC i zapisuje go w folderze 'data'.
-    """
-    ensure_data_folder()  # Upewnia się, że folder 'data' istnieje
-
-    # Generowanie losowego klucza HMAC
-    key = os.urandom(32)  # Klucz 256-bitowy
-
-    # Zapisanie klucza
-    key_path = os.path.join("data", "hmac_key.key")
-    with open(key_path, "wb") as key_file:
-        key_file.write(key)
-    return key_path
-
-def load_hmac_key():
-    """
-    Ładuje klucz HMAC z pliku.
-    """
-    key_path = os.path.join("data", "hmac_key.key")
-    if not os.path.exists(key_path):
-        raise FileNotFoundError("Klucz HMAC nie został wygenerowany.")
-    with open(key_path, "rb") as key_file:
-        return key_file.read()
-
-def calculate_hmac(file_path, key):
-    """
-    Oblicza HMAC dla pliku PDF.
-
-    Args:
-        file_path (str): Ścieżka do pliku PDF.
-        key (bytes): Klucz HMAC.
-
-    Returns:
-        bytes: Wygenerowany HMAC.
-    """
-    # Wczytaj zawartość pliku
-    with open(file_path, "rb") as f:
-        data = f.read()
-
-    # Oblicz HMAC
-    h = hmac.HMAC(key, SHA256())
-    h.update(data)
-    return h.finalize()
-
-def verify_hmac(file_path, provided_hmac, key):
-    """
-    Weryfikuje HMAC pliku PDF.
-
-    Args:
-        file_path (str): Ścieżka do pliku PDF.
-        provided_hmac (bytes): Oczekiwany HMAC.
-        key (bytes): Klucz HMAC.
-
-    Returns:
-        bool: True, jeśli HMAC jest poprawny, False w przeciwnym razie.
-    """
-    # Wczytaj zawartość pliku
-    with open(file_path, "rb") as f:
-        data = f.read()
-
-    # Weryfikacja HMAC
-    h = hmac.HMAC(key, SHA256())
-    h.update(data)
-    try:
-        h.verify(provided_hmac)
-        return True
-    except Exception:
-        return False
     
 def ensure_data_folder():
     """
@@ -133,6 +64,7 @@ class DigitalSignatureApp(QMainWindow):
         else:
             self.ui.label.setText("Nie wybrano pliku")
 
+#####PODPIS CYFROWY#####
     def generate_keys(self):
         """
         Generuje parę kluczy RSA (prywatny i publiczny), zapisuje je w folderze 'data'
@@ -284,9 +216,6 @@ class DigitalSignatureApp(QMainWindow):
                 f"  - Lokalizacja pliku: {self.selected_file}\n"
             )
 
-
-
-
     def calculate_pdf_hash(self, pdf_path):
         """
         Oblicza hash (SHA-256) zawartości pliku PDF.
@@ -349,6 +278,7 @@ class DigitalSignatureApp(QMainWindow):
 
         self.ui.certificate_info.setText("\n".join(info))
 
+#####ŁAŃCUCH CERTYFIKATÓW#####
     def load_certificate_chain(self):
         """
         Wczytuje i wyświetla informacje o łańcuchu certyfikatów.
@@ -385,6 +315,7 @@ class DigitalSignatureApp(QMainWindow):
 
         self.ui.certificate_info.setText("\n".join(chain_info))
 
+#####HMAC#####
     def generate_hmac(self):
         """
         Generuje HMAC dla wybranego pliku PDF, zapisuje klucz w folderze 'data',
@@ -425,7 +356,6 @@ class DigitalSignatureApp(QMainWindow):
             f"  - Lokalizacja pliku: {self.selected_file}\n"
             f"  - HMAC (HEX): {hmac_value.hex()}"
         )
-
 
     def verify_hmac(self):
         """
@@ -481,9 +411,6 @@ class DigitalSignatureApp(QMainWindow):
                 f"  - HMAC obliczony (HEX): {computed_hmac.hex()}\n"
                 "Plik został zmieniony lub użyto niewłaściwego klucza."
             )
-
-
-
 
 
 if __name__ == "__main__":
