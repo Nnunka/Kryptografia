@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(500, 627)
+        MainWindow.resize(500, 689)
         MainWindow.setMaximumSize(QtCore.QSize(500, 16777215))
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
@@ -38,16 +38,22 @@ class Ui_MainWindow(object):
         self.load_certificate.setGeometry(QtCore.QRect(10, 160, 480, 23))
         self.load_certificate.setObjectName("load_certificate")
         self.certificate_info = QtWidgets.QTextEdit(self.centralwidget)
-        self.certificate_info.setGeometry(QtCore.QRect(10, 250, 481, 341))
+        self.certificate_info.setGeometry(QtCore.QRect(10, 310, 481, 341))
         self.certificate_info.setObjectName("certificate_info")
         self.label_2 = QtWidgets.QLabel(self.centralwidget)
-        self.label_2.setGeometry(QtCore.QRect(10, 220, 481, 21))
+        self.label_2.setGeometry(QtCore.QRect(10, 280, 481, 21))
         self.label_2.setText("")
         self.label_2.setAlignment(QtCore.Qt.AlignCenter)
         self.label_2.setObjectName("label_2")
         self.load_chain = QtWidgets.QPushButton(self.centralwidget)
         self.load_chain.setGeometry(QtCore.QRect(10, 190, 480, 23))
         self.load_chain.setObjectName("load_chain")
+        self.generate_hmac = QtWidgets.QPushButton(self.centralwidget)
+        self.generate_hmac.setGeometry(QtCore.QRect(10, 220, 480, 23))
+        self.generate_hmac.setObjectName("generate_hmac")
+        self.verify_hmac = QtWidgets.QPushButton(self.centralwidget)
+        self.verify_hmac.setGeometry(QtCore.QRect(10, 250, 480, 23))
+        self.verify_hmac.setObjectName("verify_hmac")
         MainWindow.setCentralWidget(self.centralwidget)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
@@ -66,6 +72,8 @@ class Ui_MainWindow(object):
         self.verify_signature.setText(_translate("MainWindow", "Zweryfikuj podpis"))
         self.load_certificate.setText(_translate("MainWindow", "Przeglądaj certyfikat X.509"))
         self.load_chain.setText(_translate("MainWindow", "Przeglądaj łańcuch certyfikatów"))
+        self.generate_hmac.setText(_translate("MainWindow", "Generuj HMAC"))
+        self.verify_hmac.setText(_translate("MainWindow", "Zweryfikuj HMAC"))
 
 
 if __name__ == "__main__":

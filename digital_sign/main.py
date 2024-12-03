@@ -1,14 +1,88 @@
-import sys
 import os
+import sys
 from PyQt5.QtWidgets import QMainWindow, QFileDialog, QApplication
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import rsa, padding
 from cryptography.hazmat.primitives import serialization
 from cryptography.x509 import load_pem_x509_certificate, load_der_x509_certificate
 from cryptography.hazmat.primitives.serialization import Encoding
+from cryptography.hazmat.primitives import hmac
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+from cryptography.hazmat.primitives.hashes import SHA256
+from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 from PyPDF2 import PdfReader
 from MainWindow import Ui_MainWindow
 
+def generate_hmac_key():
+    """
+    Generuje klucz HMAC i zapisuje go w folderze 'data'.
+    """
+    ensure_data_folder()  # Upewnia się, że folder 'data' istnieje
+
+    # Generowanie losowego klucza HMAC
+    key = os.urandom(32)  # Klucz 256-bitowy
+
+    # Zapisanie klucza
+    key_path = os.path.join("data", "hmac_key.key")
+    with open(key_path, "wb") as key_file:
+        key_file.write(key)
+    return key_path
+
+def load_hmac_key():
+    """
+    Ładuje klucz HMAC z pliku.
+    """
+    key_path = os.path.join("data", "hmac_key.key")
+    if not os.path.exists(key_path):
+        raise FileNotFoundError("Klucz HMAC nie został wygenerowany.")
+    with open(key_path, "rb") as key_file:
+        return key_file.read()
+
+def calculate_hmac(file_path, key):
+    """
+    Oblicza HMAC dla pliku PDF.
+
+    Args:
+        file_path (str): Ścieżka do pliku PDF.
+        key (bytes): Klucz HMAC.
+
+    Returns:
+        bytes: Wygenerowany HMAC.
+    """
+    # Wczytaj zawartość pliku
+    with open(file_path, "rb") as f:
+        data = f.read()
+
+    # Oblicz HMAC
+    h = hmac.HMAC(key, SHA256())
+    h.update(data)
+    return h.finalize()
+
+def verify_hmac(file_path, provided_hmac, key):
+    """
+    Weryfikuje HMAC pliku PDF.
+
+    Args:
+        file_path (str): Ścieżka do pliku PDF.
+        provided_hmac (bytes): Oczekiwany HMAC.
+        key (bytes): Klucz HMAC.
+
+    Returns:
+        bool: True, jeśli HMAC jest poprawny, False w przeciwnym razie.
+    """
+    # Wczytaj zawartość pliku
+    with open(file_path, "rb") as f:
+        data = f.read()
+
+    # Weryfikacja HMAC
+    h = hmac.HMAC(key, SHA256())
+    h.update(data)
+    try:
+        h.verify(provided_hmac)
+        return True
+    except Exception:
+        return False
+    
 def ensure_data_folder():
     """
     Tworzy folder 'data', jeśli jeszcze nie istnieje.
@@ -36,6 +110,9 @@ class DigitalSignatureApp(QMainWindow):
         self.ui.verify_signature.clicked.connect(self.verify_signature)
         self.ui.load_certificate.clicked.connect(self.load_certificate)
         self.ui.load_chain.clicked.connect(self.load_certificate_chain)
+        self.ui.generate_hmac.clicked.connect(self.generate_hmac)
+        self.ui.verify_hmac.clicked.connect(self.verify_hmac)
+
 
         # Klucze RSA
         self.private_key = None
@@ -58,7 +135,8 @@ class DigitalSignatureApp(QMainWindow):
 
     def generate_keys(self):
         """
-        Generuje parę kluczy RSA (prywatny i publiczny) oraz zapisuje je w folderze 'data'.
+        Generuje parę kluczy RSA (prywatny i publiczny), zapisuje je w folderze 'data'
+        i wyświetla szczegółowe informacje.
         """
         ensure_data_folder()  # Upewnia się, że folder 'data' istnieje
 
@@ -88,11 +166,20 @@ class DigitalSignatureApp(QMainWindow):
                     format=serialization.PublicFormat.SubjectPublicKeyInfo
                 )
             )
-        self.ui.label_2.setText(f"Klucze zapisane w folderze 'data' jako {os.path.basename(private_key_path)} i {os.path.basename(public_key_path)}.")
+
+        # Wyświetlanie szczegółowych informacji o kluczach
+        self.ui.certificate_info.setText(
+            "Klucze RSA zostały wygenerowane i zapisane.\n"
+            f"Szczegóły:\n"
+            f"  - Klucz prywatny zapisany w: {private_key_path}\n"
+            f"  - Klucz publiczny zapisany w: {public_key_path}\n\n"
+            f"Klucz publiczny (PEM):\n{self.public_key.public_bytes(Encoding.PEM, serialization.PublicFormat.SubjectPublicKeyInfo).decode('utf-8')}\n"
+        )
+
 
     def sign_file(self):
         """
-        Podpisuje wybrany plik PDF przy użyciu klucza prywatnego RSA.
+        Podpisuje wybrany plik PDF przy użyciu klucza prywatnego RSA i wyświetla szczegółowe informacje o podpisie.
         Zapisuje podpis w folderze 'data'.
         """
         if not self.selected_file:
@@ -105,52 +192,68 @@ class DigitalSignatureApp(QMainWindow):
 
         ensure_data_folder()  # Upewnia się, że folder 'data' istnieje
 
-        # Obliczanie hasha dokumentu
-        document_hash = self.calculate_pdf_hash(self.selected_file)
+        try:
+            # Obliczanie skrótu dokumentu
+            document_hash = self.calculate_pdf_hash(self.selected_file)
 
-        # Podpisywanie hasha kluczem prywatnym
-        signature = self.private_key.sign(
-            document_hash,
-            padding.PSS(
-                mgf=padding.MGF1(hashes.SHA256()),
-                salt_length=padding.PSS.MAX_LENGTH
-            ),
-            hashes.SHA256()
-        )
+            # Podpisywanie hasha kluczem prywatnym
+            signature = self.private_key.sign(
+                document_hash,
+                padding.PSS(
+                    mgf=padding.MGF1(hashes.SHA256()),
+                    salt_length=padding.PSS.MAX_LENGTH
+                ),
+                hashes.SHA256()
+            )
 
-        # Zapis podpisu do pliku
-        signature_path = os.path.join("data", "signature.sig")
-        with open(signature_path, "wb") as sig_file:
-            sig_file.write(signature)
+            # Zapis podpisu do pliku
+            signature_path = os.path.join("data", "signature.sig")
+            with open(signature_path, "wb") as sig_file:
+                sig_file.write(signature)
 
-        self.ui.label_2.setText(f"Plik podpisany i zapisany w folderze 'data' jako {os.path.basename(signature_path)}.")
+            # Wyświetlenie szczegółowych informacji o podpisie
+            self.ui.certificate_info.setText(
+                "Plik został podpisany cyfrowo.\n"
+                f"Szczegóły podpisu:\n"
+                f"  - Algorytm skrótu: SHA256\n"
+                f"  - Plik: {os.path.basename(self.selected_file)}\n"
+                f"  - Lokalizacja pliku: {self.selected_file}\n"
+                f"  - Podpis cyfrowy (HEX): {signature.hex()}\n\n"
+                f"Klucz publiczny użyty do weryfikacji:\n"
+                f"{self.public_key.public_bytes(Encoding.PEM, serialization.PublicFormat.SubjectPublicKeyInfo).decode('utf-8')}"
+            )
+
+            self.ui.label_2.setText(f"Plik podpisany i zapisany w folderze 'data' jako {os.path.basename(signature_path)}.")
+
+        except Exception as e:
+            self.ui.label_2.setText(f"Błąd podczas podpisywania pliku: {str(e)}")
+
 
     def verify_signature(self):
         """
-        Weryfikuje podpis pliku PDF przy użyciu klucza publicznego RSA.
+        Weryfikuje podpis cyfrowy dla wybranego pliku PDF i wyświetla szczegółowe informacje.
         """
         if not self.selected_file:
             self.ui.label_2.setText("Nie wybrano pliku PDF.")
             return
 
+        # Ścieżka do pliku z podpisem
         signature_path = os.path.join("data", "signature.sig")
+
+        # Sprawdzenie, czy plik podpisu istnieje
         if not os.path.exists(signature_path):
-            self.ui.label_2.setText("Brak podpisu w folderze 'data'.")
+            self.ui.label_2.setText(f"Brak pliku z podpisem w: {signature_path}. Wygeneruj podpis cyfrowy.")
             return
 
-        if not self.public_key:
-            self.ui.label_2.setText("Brak klucza publicznego do weryfikacji.")
-            return
-
-        # Obliczanie hasha dokumentu
-        document_hash = self.calculate_pdf_hash(self.selected_file)
-
-        # Odczytanie podpisu
-        with open(signature_path, "rb") as sig_file:
-            signature = sig_file.read()
-
-        # Weryfikacja podpisu
         try:
+            # Odczytanie podpisu
+            with open(signature_path, "rb") as sig_file:
+                signature = sig_file.read()
+
+            # Oblicz skrót z wybranego pliku PDF
+            document_hash = self.calculate_pdf_hash(self.selected_file)
+
+            # Próba weryfikacji podpisu
             self.public_key.verify(
                 signature,
                 document_hash,
@@ -160,9 +263,29 @@ class DigitalSignatureApp(QMainWindow):
                 ),
                 hashes.SHA256()
             )
-            self.ui.label_2.setText("Podpis jest poprawny.")
+
+            # Wyświetlenie szczegółów, jeśli podpis jest poprawny
+            self.ui.certificate_info.setText(
+                "Weryfikacja podpisu zakończona pomyślnie.\n"
+                "Szczegóły weryfikacji:\n"
+                f"  - Algorytm skrótu: SHA256\n"
+                f"  - Plik: {os.path.basename(self.selected_file)}\n"
+                f"  - Lokalizacja pliku: {self.selected_file}\n"
+                f"  - Podpis cyfrowy (HEX): {signature.hex()}\n"
+                f"  - Klucz publiczny:\n{self.public_key.public_bytes(Encoding.PEM, serialization.PublicFormat.SubjectPublicKeyInfo).decode('utf-8')}"
+            )
+
         except Exception as e:
-            self.ui.label_2.setText("Weryfikacja podpisu nie powiodła się.")
+            # Wyświetlenie szczegółów błędu, jeśli weryfikacja się nie powiodła
+            self.ui.certificate_info.setText(
+                "Weryfikacja podpisu nie powiodła się.\n"
+                f"  - Błąd: {str(e)}\n"
+                f"  - Plik: {os.path.basename(self.selected_file)}\n"
+                f"  - Lokalizacja pliku: {self.selected_file}\n"
+            )
+
+
+
 
     def calculate_pdf_hash(self, pdf_path):
         """
@@ -261,6 +384,106 @@ class DigitalSignatureApp(QMainWindow):
                 chain_info.append(f"{cert_file}: Błąd wczytywania - {str(e)}")
 
         self.ui.certificate_info.setText("\n".join(chain_info))
+
+    def generate_hmac(self):
+        """
+        Generuje HMAC dla wybranego pliku PDF, zapisuje klucz w folderze 'data',
+        i wyświetla szczegółowe informacje o kluczu.
+        """
+        if not self.selected_file:
+            self.ui.label_2.setText("Nie wybrano pliku PDF.")
+            return
+
+        ensure_data_folder()  # Upewnia się, że folder 'data' istnieje
+
+        # Generowanie lub załadowanie klucza HMAC
+        try:
+            key = load_hmac_key()
+            key_message = "Klucz HMAC już istnieje i został załadowany."
+        except FileNotFoundError:
+            key_path = generate_hmac_key()
+            key = load_hmac_key()
+            key_message = f"Wygenerowano nowy klucz HMAC i zapisano w: {key_path}"
+
+        # Oblicz HMAC
+        hmac_value = calculate_hmac(self.selected_file, key)
+
+        # Zapis HMAC
+        hmac_path = os.path.join("data", "file.hmac")
+        with open(hmac_path, "wb") as hmac_file:
+            hmac_file.write(hmac_value)
+
+        # Wyświetlanie szczegółowych informacji
+        self.ui.certificate_info.setText(
+            f"{key_message}\n"
+            f"Szczegóły klucza:\n"
+            f"  - Długość klucza: {len(key) * 8} bitów\n"
+            f"  - Klucz (HEX): {key.hex()}\n\n"
+            f"HMAC został wygenerowany i zapisany jako: {os.path.basename(hmac_path)}\n"
+            f"Szczegóły HMAC:\n"
+            f"  - Plik: {os.path.basename(self.selected_file)}\n"
+            f"  - Lokalizacja pliku: {self.selected_file}\n"
+            f"  - HMAC (HEX): {hmac_value.hex()}"
+        )
+
+
+    def verify_hmac(self):
+        """
+        Weryfikuje HMAC dla wybranego pliku PDF i wyświetla szczegółowe informacje.
+        """
+        if not self.selected_file:
+            self.ui.label_2.setText("Nie wybrano pliku PDF.")
+            return
+
+        # Ścieżka do klucza HMAC i HMAC pliku
+        hmac_path = os.path.join("data", "file.hmac")
+
+        # Sprawdzenie, czy klucz HMAC istnieje
+        try:
+            key = load_hmac_key()
+        except FileNotFoundError:
+            self.ui.label_2.setText("Brak klucza HMAC. Wygeneruj go najpierw.")
+            return
+
+        # Sprawdzenie, czy HMAC został zapisany
+        if not os.path.exists(hmac_path):
+            self.ui.label_2.setText(f"Nie znaleziono pliku z HMAC w: {hmac_path}. Wygeneruj go najpierw.")
+            return
+
+        # Wczytaj zapisany HMAC
+        with open(hmac_path, "rb") as hmac_file:
+            saved_hmac = hmac_file.read()
+
+        # Oblicz nowy HMAC dla pliku
+        computed_hmac = calculate_hmac(self.selected_file, key)
+
+        # Porównanie HMAC
+        if saved_hmac == computed_hmac:
+            self.ui.certificate_info.setText(
+                "Weryfikacja HMAC zakończona pomyślnie.\n"
+                "Szczegóły weryfikacji:\n"
+                f"  - Algorytm: SHA256\n"
+                f"  - Plik: {os.path.basename(self.selected_file)}\n"
+                f"  - Lokalizacja pliku: {self.selected_file}\n"
+                f"  - Klucz HMAC: {len(key) * 8} bitów\n"
+                f"  - HMAC zapisany (HEX): {saved_hmac.hex()}\n"
+                f"  - HMAC obliczony (HEX): {computed_hmac.hex()}"
+            )
+        else:
+            self.ui.certificate_info.setText(
+                "Weryfikacja HMAC nie powiodła się.\n"
+                "Szczegóły:\n"
+                f"  - Algorytm: SHA256\n"
+                f"  - Plik: {os.path.basename(self.selected_file)}\n"
+                f"  - Lokalizacja pliku: {self.selected_file}\n"
+                f"  - Klucz HMAC: {len(key) * 8} bitów\n"
+                f"  - HMAC zapisany (HEX): {saved_hmac.hex()}\n"
+                f"  - HMAC obliczony (HEX): {computed_hmac.hex()}\n"
+                "Plik został zmieniony lub użyto niewłaściwego klucza."
+            )
+
+
+
 
 
 if __name__ == "__main__":
