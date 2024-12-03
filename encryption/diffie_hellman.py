@@ -50,12 +50,10 @@ class DiffieHellman:
         """
         if not (1 <= other_public_key < self.p):
             raise ValueError("Klucz publiczny drugiej strony jest niepoprawny.")
-
-        # Sprawdzenie, czy klucz publiczny pochodzi z właściwego generatora
-        if pow(self.g, other_public_key, self.p) != other_public_key and other_public_key != self.public_key:
-            raise ValueError("Klucz publiczny jest fałszywy lub nieprawidłowy.")
-
+        
+        # Obliczenie wspólnego sekretu
         return pow(other_public_key, self.private_key, self.p)
+
 
     @staticmethod
     def derive_key(shared_secret):

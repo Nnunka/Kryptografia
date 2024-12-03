@@ -261,19 +261,30 @@ class Projekt(QMainWindow):
 ### RSA ###
     def szyfruj_rsa(self):
         """
-        Szyfruje tekst za pomocą algorytmu RSA.
+        Szyfruje tekst za pomocą algorytmu RSA i wyświetla klucz publiczny w polu klucz_rsa.
         """
-        rsa_cipher = RSACipher()
-        tekst = self.ui.input.toPlainText()
+        rsa_cipher = RSACipher()  # Inicjalizacja algorytmu RSA
+        tekst = self.ui.input.toPlainText()  # Pobierz tekst do zaszyfrowania
+
         try:
+            # Szyfrowanie tekstu
             szyfrowany = rsa_cipher.encrypt(tekst)
-            szyfrowany_str = " ".join(map(str, szyfrowany))  
-            self.ui.output.setPlainText(
-                f"{szyfrowany_str}\nKlucz publiczny: {rsa_cipher.public_key}"
-            )
-            self.rsa_private_key = rsa_cipher.private_key 
+            szyfrowany_str = " ".join(map(str, szyfrowany))  # Konwertuj listę na ciąg tekstowy
+
+            # Wyświetlanie zaszyfrowanego tekstu w polu `output`
+            self.ui.output.setPlainText(szyfrowany_str)
+
+            # Zapis klucza prywatnego
+            self.rsa_private_key = rsa_cipher.private_key
+
+            # Wyświetlanie klucza publicznego w polu `klucz_rsa`
+            public_key_str = f"N:{rsa_cipher.public_key[0]}, E: {rsa_cipher.public_key[1]}"
+            self.ui.klucz__rsa.setPlainText(public_key_str)
+
         except Exception as e:
-            self.ui.output.setPlainText(f"Błąd szyfrowania: {str(e)}")
+            self.ui.output.setPlainText(f"Błąd szyfrowania RSA: {str(e)}")
+
+
 
     def odszyfruj_rsa(self):
         """
@@ -297,19 +308,31 @@ class Projekt(QMainWindow):
         try:
             p = self.ui.p_hellman.value()
             g = self.ui.g_hellman.value()
+            
+            # Sprawdzanie, czy p jest liczbą pierwszą
             if not isprime(p):
-                self.ui.output.setPlainText("p musi być liczbą pierwszą.")
+                self.ui.output.setPlainText("Błąd: 'p' musi być liczbą pierwszą.")
                 return
+            
+            # Sprawdzanie, czy g jest w zakresie
             if not (1 < g < p):
-                self.ui.output.setPlainText("g musi być większe niż 1 i mniejsze niż p.")
+                self.ui.output.setPlainText("Błąd: 'g' musi być większe niż 1 i mniejsze niż 'p'.")
                 return
+
+            # Inicjalizacja obiektów Diffie-Hellman
             self.diffie_hellman_alice = DiffieHellman(p, g)
             self.diffie_hellman_bob = DiffieHellman(p, g)
+
+            # Wyświetlanie kluczy publicznych
             self.ui.klucz__monoalfabet_2.setPlainText(str(self.diffie_hellman_alice.public_key))
             self.ui.klucz__bob.setPlainText(str(self.diffie_hellman_bob.public_key))
-            self.ui.output.setPlainText("Klucze publiczne zostały wygenerowane.")
-        except Exception as e:
+            self.ui.output.setPlainText("Klucze publiczne zostały wygenerowane pomyślnie.")
+
+        except ValueError as e:
             self.ui.output.setPlainText(f"Błąd podczas obliczania kluczy: {str(e)}")
+        except Exception as e:
+            self.ui.output.setPlainText(f"Nieoczekiwany błąd: {str(e)}")
+
 
     def szyfruj_hellman(self):
         """
