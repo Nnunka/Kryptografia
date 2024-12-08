@@ -11,15 +11,30 @@ from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.hazmat.primitives.hashes import SHA256
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 from PyPDF2 import PdfReader
+from cert_chain_gen import simulate_certificate_chain
 from hmac_utils import generate_hmac_key, load_hmac_key, calculate_hmac, verify_hmac
 from MainWindow import Ui_MainWindow
     
+def resource_path(relative_path):
+    """
+    Zwraca ścieżkę do zasobów, zarówno podczas uruchamiania w środowisku deweloperskim, jak i w środowisku PyInstaller.
+    """
+    try:
+        # Gdy aplikacja jest zapakowana w .exe
+        base_path = sys._MEIPASS
+    except AttributeError:
+        # Podczas uruchamiania w środowisku deweloperskim
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
+
 def ensure_data_folder():
     """
     Tworzy folder 'data', jeśli jeszcze nie istnieje.
     """
-    if not os.path.exists("data"):
-        os.makedirs("data")
+    data_folder = resource_path("data")
+    if not os.path.exists(data_folder):
+        os.makedirs(data_folder)
+    return data_folder
 
 class DigitalSignatureApp(QMainWindow):
     """
@@ -43,6 +58,8 @@ class DigitalSignatureApp(QMainWindow):
         self.ui.load_chain.clicked.connect(self.load_certificate_chain)
         self.ui.generate_hmac.clicked.connect(self.generate_hmac)
         self.ui.verify_hmac.clicked.connect(self.verify_hmac)
+        self.ui.gen_chain.clicked.connect(self.generate_certificate_chain)
+
 
 
         # Klucze RSA
@@ -51,6 +68,7 @@ class DigitalSignatureApp(QMainWindow):
 
         # Wybrany plik PDF
         self.selected_file = None
+
 
     def select_file(self):
         """
@@ -64,13 +82,14 @@ class DigitalSignatureApp(QMainWindow):
         else:
             self.ui.label.setText("Nie wybrano pliku")
 
+
 #####PODPIS CYFROWY#####
     def generate_keys(self):
         """
         Generuje parę kluczy RSA (prywatny i publiczny), zapisuje je w folderze 'data'
         i wyświetla szczegółowe informacje.
         """
-        ensure_data_folder()  # Upewnia się, że folder 'data' istnieje
+        data_folder = ensure_data_folder()  # Upewnia się, że folder 'data' istnieje
 
         # Generowanie klucza prywatnego
         self.private_key = rsa.generate_private_key(
@@ -279,6 +298,26 @@ class DigitalSignatureApp(QMainWindow):
         self.ui.certificate_info.setText("\n".join(info))
 
 #####ŁAŃCUCH CERTYFIKATÓW#####
+    def generate_certificate_chain(self):
+        """
+        Generuje łańcuch certyfikatów (Root CA, Intermediate CA, End Entity)
+        i wyświetla informacje o zapisanych plikach.
+        """
+        try:
+            # Generowanie łańcucha certyfikatów
+            simulate_certificate_chain()
+
+            # Informacja o sukcesie
+            self.ui.certificate_info.setText(
+                "Łańcuch certyfikatów został wygenerowany i zapisany w 'cert_chain'.\n"
+                "Zawiera:\n"
+                "  - root_cert.pem: Certyfikat Root CA\n"
+                "  - intermediate_cert.pem: Certyfikat Intermediate CA\n"
+                "  - end_entity_cert.pem: Certyfikat końcowego podmiotu (End Entity)\n"
+            )
+        except Exception as e:
+            self.ui.certificate_info.setText(f"Błąd podczas generowania łańcucha certyfikatów: {str(e)}")
+
     def load_certificate_chain(self):
         """
         Wczytuje i wyświetla informacje o łańcuchu certyfikatów.

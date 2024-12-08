@@ -1,3 +1,4 @@
+import os
 import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog
 from MainWindow import Ui_MainWindow
@@ -8,6 +9,7 @@ from des import DESCipher
 from aes import AESCipher
 from rsa import RSACipher
 from diffie_hellman import DiffieHellman
+
 
 class Projekt(QMainWindow):
     """
@@ -60,15 +62,34 @@ class Projekt(QMainWindow):
         self.diffie_hellman_alice = None
         self.diffie_hellman_bob = None
 
+    @staticmethod
+    def resource_path(relative_path):
+        """
+        Funkcja do obsługi poprawnych ścieżek w środowisku PyInstaller.
+        """
+        base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
+        return os.path.join(base_path, relative_path)
+ 
+
     def wczytaj_plik(self):
         """
         Obsługuje wczytywanie pliku z systemu plików i wyświetla jego zawartość w polu tekstowym.
         """
-        file_name, _ = QFileDialog.getOpenFileName(self, "Wybierz plik", "", "Text Files (*.txt);;All Files (*)")
-        if file_name:
-            with open(file_name, 'r', encoding='utf-8') as file:
-                tekst = file.read()
-                self.ui.input.setPlainText(tekst)
+        try:
+            # QFileDialog pozwala użytkownikowi wybrać plik
+            file_name, _ = QFileDialog.getOpenFileName(self, "Wybierz plik", "", "Text Files (*.txt);;All Files (*)")
+            
+            if file_name:
+                # Otwieramy plik wybrany przez użytkownika
+                with open(file_name, 'r', encoding='utf-8') as file:
+                    tekst = file.read()
+                    self.ui.input.setPlainText(tekst)
+            else:
+                self.ui.output.setPlainText("Nie wybrano żadnego pliku.")
+        except Exception as e:
+            # Obsługa błędów - przydatne w przypadku problemów z dostępem do pliku
+            self.ui.output.setPlainText(f"Błąd podczas wczytywania pliku: {str(e)}")
+
     
     def sprawdz_puste_pole(self, tekst):
         if not tekst.strip():
