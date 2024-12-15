@@ -89,6 +89,16 @@ def save_private_key(key, filename):
             encryption_algorithm=serialization.NoEncryption()  # Brak szyfrowania klucza
         ))
 
+def ensure_cert_chain_folder():
+    """
+    Tworzy folder 'cert_chain' w katalogu bieżącym aplikacji, jeśli jeszcze nie istnieje.
+    """
+    cert_folder = os.path.abspath("cert_chain")
+    if not os.path.exists(cert_folder):
+        os.makedirs(cert_folder)
+    return cert_folder
+
+
 # Funkcja do symulacji łańcucha certyfikatów
 def simulate_certificate_chain():
     """
@@ -163,3 +173,4 @@ if __name__ == "__main__":
     Symuluje łańcuch certyfikatów i zapisuje certyfikaty oraz klucze w folderze `cert_chain`.
     """
     simulate_certificate_chain()
+

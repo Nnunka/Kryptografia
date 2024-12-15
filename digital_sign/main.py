@@ -11,7 +11,7 @@ from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.hazmat.primitives.hashes import SHA256
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 from PyPDF2 import PdfReader
-from cert_chain_gen import simulate_certificate_chain
+from cert_chain_gen import simulate_certificate_chain, ensure_cert_chain_folder
 from hmac_utils import generate_hmac_key, load_hmac_key, calculate_hmac, verify_hmac
 from MainWindow import Ui_MainWindow
     
@@ -29,12 +29,13 @@ def resource_path(relative_path):
 
 def ensure_data_folder():
     """
-    Tworzy folder 'data', jeśli jeszcze nie istnieje.
+    Tworzy folder 'data' w katalogu bieżącym aplikacji, jeśli jeszcze nie istnieje.
     """
-    data_folder = resource_path("data")
+    data_folder = os.path.abspath("data")  # Tworzenie ścieżki bezpośrednio do folderu 'data'
     if not os.path.exists(data_folder):
         os.makedirs(data_folder)
     return data_folder
+
 
 class DigitalSignatureApp(QMainWindow):
     """
@@ -89,7 +90,7 @@ class DigitalSignatureApp(QMainWindow):
         Generuje parę kluczy RSA (prywatny i publiczny), zapisuje je w folderze 'data'
         i wyświetla szczegółowe informacje.
         """
-        data_folder = ensure_data_folder()  # Upewnia się, że folder 'data' istnieje
+        ensure_data_folder()  # Upewnia się, że folder 'data' istnieje
 
         # Generowanie klucza prywatnego
         self.private_key = rsa.generate_private_key(
@@ -456,7 +457,11 @@ if __name__ == "__main__":
     """
     Uruchamia aplikację PyQt5 do podpisów cyfrowych i obsługi certyfikatów.
     """
+    ensure_data_folder()  # Tworzy folder 'data'
+    ensure_cert_chain_folder()  # Tworzy folder 'cert_chain'
+    
     app = QApplication(sys.argv)
     window = DigitalSignatureApp()
     window.show()
     sys.exit(app.exec())
+
